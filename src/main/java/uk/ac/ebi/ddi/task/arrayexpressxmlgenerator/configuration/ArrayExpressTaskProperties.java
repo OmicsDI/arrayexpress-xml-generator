@@ -5,42 +5,42 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("arrayexpress")
 public class ArrayExpressTaskProperties {
 
-    private String s3OutputFile;
+    private String outputFile;
 
-    private String s3ExperimentFile;
+    private String experimentFile;
 
-    private String s3ProtocolFile;
+    private String protocolFile;
 
-    public String getS3OutputFile() {
-        return s3OutputFile;
+    public String getOutputFile() {
+        return outputFile;
     }
 
-    public void setS3OutputFile(String s3OutputFile) {
-        this.s3OutputFile = s3OutputFile;
+    public void setOutputFile(String outputFile) {
+        this.outputFile = outputFile;
     }
 
-    public String getS3ExperimentFile() {
-        return s3ExperimentFile;
+    public String getExperimentFile() {
+        return experimentFile;
     }
 
-    public void setS3ExperimentFile(String s3ExperimentFile) {
-        this.s3ExperimentFile = s3ExperimentFile;
+    public void setExperimentFile(String experimentFile) {
+        this.experimentFile = experimentFile;
     }
 
-    public String getS3ProtocolFile() {
-        return s3ProtocolFile;
+    public String getProtocolFile() {
+        return protocolFile;
     }
 
-    public void setS3ProtocolFile(String s3ProtocolFile) {
-        this.s3ProtocolFile = s3ProtocolFile;
+    public void setProtocolFile(String protocolFile) {
+        this.protocolFile = protocolFile;
     }
 
     @Override
     public String toString() {
         return "ArrayExpressTaskProperties{" +
-                "s3OutputFile='" + s3OutputFile + '\'' +
-                ", s3ExperimentFile='" + s3ExperimentFile + '\'' +
-                ", s3ProtocolFile='" + s3ProtocolFile + '\'' +
+                "outputFile='" + outputFile + '\'' +
+                ", experimentFile='" + experimentFile + '\'' +
+                ", protocolFile='" + protocolFile + '\'' +
                 '}';
     }
 }

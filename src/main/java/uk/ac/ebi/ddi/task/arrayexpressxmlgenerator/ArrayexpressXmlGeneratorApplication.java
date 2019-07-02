@@ -9,11 +9,9 @@ import uk.ac.ebi.ddi.arrayexpress.experimentsreader.ExperimentReader;
 import uk.ac.ebi.ddi.arrayexpress.experimentsreader.model.experiments.Experiments;
 import uk.ac.ebi.ddi.arrayexpress.protocolsreader.ProtocolReader;
 import uk.ac.ebi.ddi.arrayexpress.protocolsreader.model.protocols.Protocols;
-import uk.ac.ebi.ddi.ddis3service.DdiS3ServiceApplication;
-import uk.ac.ebi.ddi.ddis3service.configuration.S3Configuration;
-import uk.ac.ebi.ddi.ddis3service.configuration.S3Properties;
-import uk.ac.ebi.ddi.ddis3service.services.AmazonS3Service;
-import uk.ac.ebi.ddi.ddis3service.type.ConvertibleOutputStream;
+import uk.ac.ebi.ddi.ddifileservice.DdiFileServiceApplication;
+import uk.ac.ebi.ddi.ddifileservice.services.IFileSystem;
+import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
 import uk.ac.ebi.ddi.task.arrayexpressxmlgenerator.configuration.ArrayExpressTaskProperties;
 import uk.ac.ebi.ddi.task.arrayexpressxmlgenerator.configuration.TaskConfiguration;
 
@@ -22,18 +20,14 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
-@SpringBootApplication(scanBasePackageClasses =
-		{DdiS3ServiceApplication.class, S3Configuration.class, TaskConfiguration.class})
+@SpringBootApplication(scanBasePackageClasses = {DdiFileServiceApplication.class, TaskConfiguration.class})
 public class ArrayexpressXmlGeneratorApplication implements CommandLineRunner {
 
 	@Autowired
 	private ArrayExpressTaskProperties taskProperties;
 
 	@Autowired
-	private AmazonS3Service s3Service;
-
-	@Autowired
-	private S3Properties s3Properties;
+	private IFileSystem fileSystem;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ArrayexpressXmlGeneratorApplication.class, args);
@@ -43,12 +37,11 @@ public class ArrayexpressXmlGeneratorApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		Experiments experiments;
 		Protocols protocols;
-		String bucket = s3Properties.getBucketName();
 
-		try (InputStream in = s3Service.getObject(bucket, taskProperties.getS3ExperimentFile())) {
+		try (InputStream in = fileSystem.getInputStream(taskProperties.getExperimentFile())) {
 			experiments = new ExperimentReader(in).getExperiments();
 		}
-		try (InputStream in = s3Service.getObject(bucket, taskProperties.getS3ProtocolFile())) {
+		try (InputStream in = fileSystem.getInputStream(taskProperties.getProtocolFile())) {
 			protocols = new ProtocolReader(in).getProtocols();
 		}
 
@@ -58,6 +51,6 @@ public class ArrayexpressXmlGeneratorApplication implements CommandLineRunner {
 			GenerateArrayExpressFile.generate(experiments, protocols, w);
 		}
 
-		s3Service.uploadObject(bucket, taskProperties.getS3OutputFile(), outputStream);
+		fileSystem.saveFile(outputStream, taskProperties.getOutputFile());
 	}
 }
