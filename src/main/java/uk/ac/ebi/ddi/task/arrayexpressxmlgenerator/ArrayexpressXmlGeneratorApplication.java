@@ -9,18 +9,16 @@ import uk.ac.ebi.ddi.arrayexpress.experimentsreader.ExperimentReader;
 import uk.ac.ebi.ddi.arrayexpress.experimentsreader.model.experiments.Experiments;
 import uk.ac.ebi.ddi.arrayexpress.protocolsreader.ProtocolReader;
 import uk.ac.ebi.ddi.arrayexpress.protocolsreader.model.protocols.Protocols;
-import uk.ac.ebi.ddi.ddifileservice.DdiFileServiceApplication;
 import uk.ac.ebi.ddi.ddifileservice.services.IFileSystem;
 import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
 import uk.ac.ebi.ddi.task.arrayexpressxmlgenerator.configuration.ArrayExpressTaskProperties;
-import uk.ac.ebi.ddi.task.arrayexpressxmlgenerator.configuration.TaskConfiguration;
 
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
-@SpringBootApplication(scanBasePackageClasses = {DdiFileServiceApplication.class, TaskConfiguration.class})
+@SpringBootApplication()
 public class ArrayexpressXmlGeneratorApplication implements CommandLineRunner {
 
 	@Autowired
