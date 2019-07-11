@@ -8,6 +8,8 @@ RUN mvn package
 
 FROM openjdk:8-jdk-alpine
 
-COPY --from=builder /root/target/*.jar /app.jar
+COPY --from=builder /root/target/*.jar /
 
-CMD ['java', '-jar', '/app.jar']
+RUN mv /*.jar /app.jar
+
+ENTRYPOINT ["java", "-jar", "/app.jar"]
