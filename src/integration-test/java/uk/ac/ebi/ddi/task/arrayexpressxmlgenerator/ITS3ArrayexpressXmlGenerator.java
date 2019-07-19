@@ -91,7 +91,7 @@ public class ITS3ArrayexpressXmlGenerator {
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		fileSystem.deleteFile(taskProperties.getExperimentFile());
 		fileSystem.deleteFile(taskProperties.getProtocolFile());
 		fileSystem.deleteFile(taskProperties.getOutputFile());
