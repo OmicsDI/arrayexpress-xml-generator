@@ -13,16 +13,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import uk.ac.ebi.ddi.ddifileservice.services.IFileSystem;
 import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
 import uk.ac.ebi.ddi.task.arrayexpressxmlgenerator.configuration.ArrayExpressTaskProperties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -34,10 +31,13 @@ import java.io.InputStream;
 @ContextConfiguration(classes = ArrayexpressXmlGeneratorApplication.class,
 		initializers = ConfigFileApplicationContextInitializer.class)
 @TestPropertySource(properties = {
-		"arrayexpress.output_file=/testing/arrayexpress/output.xml",
-		"arrayexpress.experiment_file=/testing/arrayexpress/experiment.xml",
-		"arrayexpress.protocol_file=/testing/arrayexpress/protocol.xml",
-		"s3.env_auth=true"
+		"arrayexpress.output_file=testing/arrayexpress/output.xml",
+		"arrayexpress.experiment_file=testing/arrayexpress/experiment.xml",
+		"arrayexpress.protocol_file=testing/arrayexpress/protocol.xml",
+		"s3.env_auth=true",
+		"s3.endpoint_url=https://s3.embassy.ebi.ac.uk",
+		"s3.bucket_name=caas-omicsdi",
+		"s3.region=eu-west-2"
 })
 public class ITS3ArrayexpressXmlGenerator {
 
@@ -46,6 +46,9 @@ public class ITS3ArrayexpressXmlGenerator {
 
 	@Autowired
 	private IFileSystem fileSystem;
+
+	@Autowired
+	private ArrayexpressXmlGeneratorApplication application;
 
 	@Before
 	public void setUp() throws Exception {
@@ -66,7 +69,8 @@ public class ITS3ArrayexpressXmlGenerator {
 	}
 
 	@Test
-	public void contextLoads() throws IOException, ParserConfigurationException, SAXException {
+	public void contextLoads() throws Exception {
+		application.run();
 		try (InputStream inputStream = fileSystem.getInputStream(taskProperties.getOutputFile())) {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			factory.setValidating(false);
