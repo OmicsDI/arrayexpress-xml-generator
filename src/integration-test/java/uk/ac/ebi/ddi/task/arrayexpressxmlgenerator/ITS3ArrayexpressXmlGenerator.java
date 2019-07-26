@@ -14,7 +14,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.ac.ebi.ddi.ddifileservice.services.IFileSystem;
-import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
 import uk.ac.ebi.ddi.task.arrayexpressxmlgenerator.configuration.ArrayExpressTaskProperties;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -31,9 +30,9 @@ import java.io.InputStream;
 @ContextConfiguration(classes = ArrayexpressXmlGeneratorApplication.class,
 		initializers = ConfigFileApplicationContextInitializer.class)
 @TestPropertySource(properties = {
-		"arrayexpress.output_file=testing/arrayexpress/output.xml",
-		"arrayexpress.experiment_file=testing/arrayexpress/experiment.xml",
-		"arrayexpress.protocol_file=testing/arrayexpress/protocol.xml",
+		"arrayexpress.output_dir=testing/arrayexpress/output",
+		"arrayexpress.experiment_dir=testing/arrayexpress/experiment",
+		"arrayexpress.protocol_dir=testing/arrayexpress/protocol",
 		"s3.env_auth=true",
 		"s3.endpoint_url=https://s3.embassy.ebi.ac.uk",
 		"s3.bucket_name=caas-omicsdi",
@@ -54,24 +53,34 @@ public class ITS3ArrayexpressXmlGenerator {
 	public void setUp() throws Exception {
 
 		// Testing upload file
-		File experiment = new File(getClass().getClassLoader().getResource("experiment_data.xml").getFile());
-		fileSystem.copyFile(experiment, taskProperties.getExperimentFile());
+		File experiment = getResource("E-AFMX-1_experiment.xml");
+		fileSystem.copyFile(experiment, taskProperties.getExperimentDir() + "/E-AFMX-1_experiment.xml");
 
-		// Testing upload output stream
-		try (InputStream in = getClass().getClassLoader().getResourceAsStream("protocols.xml")) {
-			ConvertibleOutputStream outputStream = new ConvertibleOutputStream();
-			int b;
-			while ((b = in.read()) != -1) {
-				outputStream.write(b);
-			}
-			fileSystem.saveFile(outputStream, taskProperties.getProtocolFile());
-		}
+		File protocol1 = getResource("AffymetrixProtocolHybridization-EukGE-WS2v4_protocol.xml");
+		fileSystem.copyFile(protocol1, taskProperties.getProtocolDir() + "/" + protocol1.getName());
+
+		protocol1 = getResource("AffymetrixProtocolPercentile_protocol.xml");
+		fileSystem.copyFile(protocol1, taskProperties.getProtocolDir() + "/" + protocol1.getName());
+
+		protocol1 = getResource("P-AFFY-1_protocol.xml");
+		fileSystem.copyFile(protocol1, taskProperties.getProtocolDir() + "/" + protocol1.getName());
+
+		protocol1 = getResource("P-AFFY-2_protocol.xml");
+		fileSystem.copyFile(protocol1, taskProperties.getProtocolDir() + "/" + protocol1.getName());
+
+		protocol1 = getResource("P-MEXP-RMABC_protocol.xml");
+		fileSystem.copyFile(protocol1, taskProperties.getProtocolDir() + "/" + protocol1.getName());
+	}
+
+	private File getResource(String name) {
+		return new File(getClass().getClassLoader().getResource(name).getFile());
 	}
 
 	@Test
 	public void contextLoads() throws Exception {
 		application.run();
-		try (InputStream inputStream = fileSystem.getInputStream(taskProperties.getOutputFile())) {
+		String fileOutput = taskProperties.getOutputDir() + "/E-AFMX-1.xml";
+		try (InputStream inputStream = fileSystem.getInputStream(fileOutput)) {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			factory.setValidating(false);
 			factory.setNamespaceAware(true);
@@ -80,20 +89,20 @@ public class ITS3ArrayexpressXmlGenerator {
 			Document document = builder.parse(inputStream);
 
 			NodeList nodeList = document.getElementsByTagName("name");
-			Assert.assertEquals(4, nodeList.getLength());
+			Assert.assertEquals(2, nodeList.getLength());
 
 			Node dbName = nodeList.item(0);
 			Assert.assertEquals("ArrayExpress", dbName.getFirstChild().getNodeValue());
 
 			NodeList entries = document.getElementsByTagName("entry");
-			Assert.assertEquals(3, entries.getLength());
+			Assert.assertEquals(1, entries.getLength());
 		}
 	}
 
 	@After
 	public void tearDown() {
-		fileSystem.deleteFile(taskProperties.getExperimentFile());
-		fileSystem.deleteFile(taskProperties.getProtocolFile());
-		fileSystem.deleteFile(taskProperties.getOutputFile());
+		fileSystem.cleanDirectory(taskProperties.getExperimentDir());
+		fileSystem.cleanDirectory(taskProperties.getProtocolDir());
+		fileSystem.cleanDirectory(taskProperties.getOutputDir());
 	}
 }

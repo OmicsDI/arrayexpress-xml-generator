@@ -5,42 +5,42 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("arrayexpress")
 public class ArrayExpressTaskProperties {
 
-    private String outputFile;
+    private String outputDir;
 
-    private String experimentFile;
+    private String experimentDir;
 
-    private String protocolFile;
+    private String protocolDir;
 
-    public String getOutputFile() {
-        return outputFile;
+    public String getOutputDir() {
+        return outputDir;
     }
 
-    public void setOutputFile(String outputFile) {
-        this.outputFile = outputFile;
+    public void setOutputDir(String outputDir) {
+        this.outputDir = outputDir;
     }
 
-    public String getExperimentFile() {
-        return experimentFile;
+    public String getExperimentDir() {
+        return experimentDir;
     }
 
-    public void setExperimentFile(String experimentFile) {
-        this.experimentFile = experimentFile;
+    public void setExperimentDir(String experimentDir) {
+        this.experimentDir = experimentDir;
     }
 
-    public String getProtocolFile() {
-        return protocolFile;
+    public String getProtocolDir() {
+        return protocolDir;
     }
 
-    public void setProtocolFile(String protocolFile) {
-        this.protocolFile = protocolFile;
+    public void setProtocolDir(String protocolDir) {
+        this.protocolDir = protocolDir;
     }
 
     @Override
     public String toString() {
         return "ArrayExpressTaskProperties{" +
-                "outputFile='" + outputFile + '\'' +
-                ", experimentFile='" + experimentFile + '\'' +
-                ", protocolFile='" + protocolFile + '\'' +
+                "outputDir='" + outputDir + '\'' +
+                ", experimentDir='" + experimentDir + '\'' +
+                ", protocolDir='" + protocolDir + '\'' +
                 '}';
     }
 }
