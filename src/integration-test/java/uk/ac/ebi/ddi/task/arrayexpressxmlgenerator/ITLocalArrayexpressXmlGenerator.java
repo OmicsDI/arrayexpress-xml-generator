@@ -58,6 +58,9 @@ public class ITLocalArrayexpressXmlGenerator {
 		File experiment = getResource("E-AFMX-1_experiment.xml");
 		fileSystem.copyFile(experiment, taskProperties.getExperimentDir() + "/E-AFMX-1_experiment.xml");
 
+		experiment = getResource("E-BUGS-110_experiment.xml");
+		fileSystem.copyFile(experiment, taskProperties.getExperimentDir() + "/E-BUGS-110_experiment.xml");
+
 		File protocol1 = getResource("AffymetrixProtocolHybridization-EukGE-WS2v4_protocol.xml");
 		fileSystem.copyFile(protocol1, taskProperties.getProtocolDir() + "/" + protocol1.getName());
 
