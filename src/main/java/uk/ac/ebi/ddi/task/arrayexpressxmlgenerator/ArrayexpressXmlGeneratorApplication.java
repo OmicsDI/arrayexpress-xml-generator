@@ -20,8 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -54,6 +53,8 @@ public class ArrayexpressXmlGeneratorApplication implements CommandLineRunner {
 			try (InputStream in = fileSystem.getInputStream(fileName)) {
 				Experiments experiments = new ExperimentReader(in).getExperiments();
 				process(experiments);
+			} catch (Exception e) {
+				LOGGER.error("Exception occurred when processing file {}, ", fileName, e);
 			}
 			processedExperimentFiles.add(fileName);
 			if (processedExperimentFiles.size() % LOG_EVERY_N_RECORDS == 0) {
@@ -65,9 +66,11 @@ public class ArrayexpressXmlGeneratorApplication implements CommandLineRunner {
 	private void process(Experiments experiments) throws Exception {
 
 		String accession = experiments.getExperiment().get(0).getAccession();
+		Set<Protocol> requiredProtocols = experiments.getExperiment().stream()
+				.flatMap(x -> x.getProtocol().stream())
+				.collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Protocol::getAccession))));
 
-		List<Protocol> requiredProtocols = experiments.getExperiment().stream()
-				.flatMap(x -> x.getProtocol().stream()).collect(Collectors.toList());
+
 		Protocols protocols = null;
 		for (Protocol protocol : requiredProtocols) {
 			String protocolFile = protocol.getAccession().chars().mapToObj(x -> (char) x)
