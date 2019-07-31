@@ -1,5 +1,6 @@
 package uk.ac.ebi.ddi.task.arrayexpressxmlgenerator;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,11 @@ public class ArrayexpressXmlGeneratorApplication implements CommandLineRunner {
 				} else {
 					Protocols tmp = new ProtocolReader(in).getProtocols();
 					protocols.getProtocol().addAll(tmp.getProtocol());
+				}
+			} catch (AmazonS3Exception e) {
+				if (e.getStatusCode() != 404) {
+					LOGGER.info("Protocol file {} not exists", protocolFile);
+					throw e;
 				}
 			}
 		}
