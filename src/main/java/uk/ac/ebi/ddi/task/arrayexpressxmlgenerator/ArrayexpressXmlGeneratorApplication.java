@@ -94,9 +94,9 @@ public class ArrayexpressXmlGeneratorApplication implements CommandLineRunner {
 				}
 			} catch (AmazonS3Exception e) {
 				if (e.getStatusCode() != 404) {
-					LOGGER.info("Protocol file {} not exists", protocolFile);
 					throw e;
 				}
+				LOGGER.info("Protocol file {} not exists", protocolFile);
 			}
 		}
 
