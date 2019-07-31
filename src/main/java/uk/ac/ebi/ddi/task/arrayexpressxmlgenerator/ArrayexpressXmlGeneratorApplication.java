@@ -63,21 +63,27 @@ public class ArrayexpressXmlGeneratorApplication implements CommandLineRunner {
 		}
 	}
 
+	private String getUnitName(String accession) {
+		String result = accession.chars().mapToObj(x -> (char) x)
+				.filter(x -> pattern.matcher(x.toString()).matches())
+				.map(Object::toString)
+				.collect(Collectors.joining());
+		return result.toLowerCase();
+	}
+
 	private void process(Experiments experiments) throws Exception {
 
 		String accession = experiments.getExperiment().get(0).getAccession();
 		Set<Protocol> requiredProtocols = experiments.getExperiment().stream()
 				.flatMap(x -> x.getProtocol().stream())
-				.collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Protocol::getAccession))));
+				.collect(Collectors.toCollection(() ->
+						new TreeSet<>(Comparator.comparing(x -> getUnitName(x.getAccession())))));
 
 
 		Protocols protocols = null;
 		for (Protocol protocol : requiredProtocols) {
-			String protocolFile = protocol.getAccession().chars().mapToObj(x -> (char) x)
-					.filter(x -> pattern.matcher(x.toString()).matches())
-					.map(Object::toString)
-					.collect(Collectors.joining());
-			protocolFile = taskProperties.getProtocolDir() + "/" + protocolFile.toLowerCase() + "_protocol.xml";
+			String protocolFile = getUnitName(protocol.getAccession());
+			protocolFile = taskProperties.getProtocolDir() + "/" + protocolFile + "_protocol.xml";
 			try (InputStream in = fileSystem.getInputStream(protocolFile)) {
 				if (protocols == null) {
 					protocols = new ProtocolReader(in).getProtocols();
