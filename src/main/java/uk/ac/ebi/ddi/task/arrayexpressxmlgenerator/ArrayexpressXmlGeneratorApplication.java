@@ -77,7 +77,7 @@ public class ArrayexpressXmlGeneratorApplication implements CommandLineRunner {
 					.filter(x -> pattern.matcher(x.toString()).matches())
 					.map(Object::toString)
 					.collect(Collectors.joining());
-			protocolFile = taskProperties.getProtocolDir() + "/" + protocolFile + "_protocol.xml";
+			protocolFile = taskProperties.getProtocolDir() + "/" + protocolFile.toLowerCase() + "_protocol.xml";
 			try (InputStream in = fileSystem.getInputStream(protocolFile)) {
 				if (protocols == null) {
 					protocols = new ProtocolReader(in).getProtocols();
